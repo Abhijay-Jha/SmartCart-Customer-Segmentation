@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartCart | Customer Segmentation</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Arial, sans-serif;
+
+            background:
+                radial-gradient(circle at top left, #263a70 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #3d205d 0%, transparent 35%),
+                #0b1020;
+
+            min-height: 100vh;
+            color: #ffffff;
+            padding: 35px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #aebeff;
+            margin-bottom: 12px;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(135deg, #6d7cff, #9c5cff);
+            box-shadow: 0 8px 25px rgba(109,124,255,0.3);
+        }
+
+        h1 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #9da7bd;
+            font-size: 16px;
+            max-width: 650px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+        /* ================= MAIN CARD ================= */
+
+        .main-card {
+            background: rgba(20, 27, 48, 0.85);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+
+            backdrop-filter: blur(20px);
+
+            overflow: hidden;
+        }
+
+        .form-area {
+            padding: 35px;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-number {
+            width: 32px;
+            height: 32px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(109,124,255,0.15);
+            color: #9ca9ff;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .section-description {
+            color: #727d95;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        /* ================= FORM GRID ================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9da7bd;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            background: #10172b;
+            border: 1px solid #27314d;
+
+            border-radius: 11px;
+
+            color: white;
+            font-size: 14px;
+
+            outline: none;
+
+            transition: all 0.2s ease;
+        }
+
+        input:hover,
+        select:hover {
+            border-color: #3d4b70;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #7180ff;
+
+            box-shadow:
+                0 0 0 3px rgba(113,128,255,0.12);
+
+            transform: translateY(-1px);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .button-area {
+            margin-top: 5px;
+            padding-top: 10px;
+        }
+
+        .predict-btn {
+            width: 100%;
+
+            border: none;
+            border-radius: 13px;
+
+            padding: 16px;
+
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            background: linear-gradient(
+                135deg,
+                #6574ff,
+                #9657ff
+            );
+
+            box-shadow:
+                0 12px 30px rgba(101,116,255,0.25);
+
+            transition: all 0.25s ease;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 18px 40px rgba(101,116,255,0.35);
+        }
+
+        .predict-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ================= LOADING ================= */
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 18px;
+            color: #9da7bd;
+            font-size: 13px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+
+            border: 2px solid #313b58;
+            border-top: 2px solid #8794ff;
+
+            border-radius: 50%;
+
+            animation: spin 0.8s linear infinite;
+
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ================= RESULT ================= */
+
+        .result-wrapper {
+            padding: 0 35px 35px;
+        }
+
+        .result {
+            padding: 30px;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(92,105,255,0.16),
+                    rgba(154,84,255,0.10)
+                );
+
+            border: 1px solid rgba(125,139,255,0.25);
+
+            animation: resultAppear 0.6s ease forwards;
+        }
+
+        @keyframes resultAppear {
+
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: #8e99b4;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-cluster {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-description {
+            color: #aab3c8;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 750px;
+        }
+
+        .cluster-badge {
+            display: inline-block;
+
+            margin-top: 18px;
+
+            padding: 8px 13px;
+
+            border-radius: 30px;
+
+            background: rgba(255,255,255,0.07);
+
+            color: #cbd1ff;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            text-align: center;
+            color: #59647d;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 12px;
+            }
+
+            .form-area {
+                padding: 22px;
+            }
+
+            .result-wrapper {
+                padding: 0 22px 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 34px;
+            }
+
+            .result {
+                padding: 24px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="logo">
+            <div class="logo-icon">S</div>
+            SMARTCART
+        </div>
+
+        <h1>Customer Segmentation</h1>
+
+        <p class="subtitle">
+            Analyze customer behavior and identify the most relevant
+            customer segment using machine learning.
+        </p>
+
+    </header>
+
+
+    <!-- MAIN CARD -->
+
+    <div class="main-card">
+
+        <div class="form-area">
+
+            <form id="predictionForm"
+                  action="/predict"
+                  method="POST">
+
+
+                <!-- CUSTOMER PROFILE -->
+
+                <div class="section">
+
+                    <div class="section-header">
+
+                        <div class="section-number">01</div>
+
+                        <div>
+                            <div class="section-title">
+                                Customer Profile
+                            </div>
+
+                            <div class="section-description">
+                                Basic demographic information
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label>Education</label>
+
+                            <select name="Education" required>
+
+                                <option value="Graduate">
+                                    Graduate
+                                </option>
+
+                                <option value="Undergraduate">
+                                    Undergraduate
+                                </option>
+
+                                <option value="Postgraduate">
+                                    Postgraduate
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Income</label>
+
+                            <input
+                                type="number"
+                                name="Income"
+                                placeholder="e.g. 72000"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Age</label>
+
+                            <input
+                                type="number"
+                                name="Age"
+                                placeholder="e.g. 45"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Living With</label>
+
+                            <select name="Living_With" required>
+
+                                <option value="Alone">
+                                    Alone
+                                </option>
+
+                                <option value="Partner">
+                                    Partner
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Total Children</label>
+
+                            <input
+                                type="number"
+                                name="Total_Children"
+                                min="0"
+                                placeholder="e.g. 0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Customer Tenure (days)</label>
+
+                            <input
+                                type="number"
+                                name="Tenure_days"
+                                placeholder="e.g. 370"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PURCHASE BEHAVIOR -->
+
+                <div class="section">
+
+                    <div class="section-header">
+
+                        <div class="section-number">02</div>
+
+                        <div>
+
+                            <div class="section-title">
+                                Purchase Behavior
+                            </div>
+
+                            <div class="section-description">
+                                Customer purchasing activity
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label>Recency (days)</label>
+
+                            <input
+                                type="number"
+                                name="Recency"
+                                placeholder="e.g. 20"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Total Spending</label>
+
+                            <input
+                                type="number"
+                                name="Total_spending"
+                                placeholder="e.g. 1300"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Deals Purchases</label>
+
+                            <input
+                                type="number"
+                                name="NumDealsPurchases"
+                                placeholder="e.g. 2"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Web Purchases</label>
+
+                            <input
+                                type="number"
+                                name="NumWebPurchases"
+                                placeholder="e.g. 6"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Catalog Purchases</label>
+
+                            <input
+                                type="number"
+                                name="NumCatalogPurchases"
+                                placeholder="e.g. 5"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Store Purchases</label>
+
+                            <input
+                                type="number"
+                                name="NumStorePurchases"
+                                placeholder="e.g. 9"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Web Visits / Month</label>
+
+                            <input
+                                type="number"
+                                name="NumWebVisitsMonth"
+                                placeholder="e.g. 3"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ENGAGEMENT -->
+
+                <div class="section">
+
+                    <div class="section-header">
+
+                        <div class="section-number">03</div>
+
+                        <div>
+
+                            <div class="section-title">
+                                Engagement
+                            </div>
+
+                            <div class="section-description">
+                                Customer response and complaint history
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label>Complaint</label>
+
+                            <select name="Complain" required>
+
+                                <option value="0">
+                                    No
+                                </option>
+
+                                <option value="1">
+                                    Yes
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>Response to Campaign</label>
+
+                            <select name="Response" required>
+
+                                <option value="0">
+                                    No
+                                </option>
+
+                                <option value="1">
+                                    Yes
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <div class="button-area">
+
+                    <button
+                        type="submit"
+                        class="predict-btn"
+                        id="predictButton"
+                    >
+
+                        Analyze Customer
+
+                    </button>
+
+                </div>
+
+
+                <div class="loading" id="loading">
+
+                    <span class="spinner"></span>
+
+                    Analyzing customer profile...
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        {% if prediction is defined %}
+
+        <div class="result-wrapper">
+
+            <div class="result">
+
+                <div class="result-label">
+                    Segmentation Result
+                </div>
+
+
+                <div class="result-cluster">
+
+                    {{ cluster_name }}
+
+                </div>
+
+
+                <div class="result-description">
+
+                    {% if prediction == 0 %}
+
+                        This customer belongs to the
+                        <strong>Moderate-Value Customer</strong>
+                        segment. They show moderate purchasing activity
+                        and spending behavior.
+
+                    {% elif prediction == 1 %}
+
+                        This customer belongs to the
+                        <strong>High-Value Customer</strong>
+                        segment. They have strong purchasing activity,
+                        higher spending, and higher income.
+
+                    {% elif prediction == 2 %}
+
+                        This customer belongs to the
+                        <strong>Low-Value Customer</strong>
+                        segment. Their spending and purchasing activity
+                        are relatively low.
+
+                    {% elif prediction == 3 %}
+
+                        This customer belongs to the
+                        <strong>High-Value Responsive Customer</strong>
+                        segment. They demonstrate high spending and
+                        strong engagement with campaigns.
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="cluster-badge">
+
+                    Cluster {{ prediction }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <footer>
+
+        SmartCart Customer Segmentation · Machine Learning System
+
+    </footer>
+
+</div>
+
+
+<script>
+
+    const form = document.getElementById("predictionForm");
+
+    const button = document.getElementById("predictButton");
+
+    const loading = document.getElementById("loading");
+
+
+    form.addEventListener("submit", function() {
+
+        button.disabled = true;
+
+        button.innerHTML = "Analyzing...";
+
+        loading.style.display = "block";
+
+    });
+
+
+    // Smoothly scroll to result after prediction
+
+    const result = document.querySelector(".result");
+
+    if (result) {
+
+        setTimeout(() => {
+
+            result.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }, 150);
+
+    }
+
+</script>
+
+
+</body>
+</html>
